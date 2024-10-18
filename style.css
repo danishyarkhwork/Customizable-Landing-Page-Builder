@@ -1,0 +1,7 @@
+.draggable {
+  cursor: grab;
+}
+.canvas {
+  min-height: 500px;
+  border: 2px dashed #ccc;
+}
