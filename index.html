@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customizable Landing Page Builder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .draggable {
+        cursor: grab;
+      }
+      .canvas {
+        min-height: 500px;
+        border: 2px dashed #ccc;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <div class="container mx-auto p-8">
+      <h1 class="text-3xl font-bold mb-6 text-center">
+        Customizable Landing Page Builder
+      </h1>
+
+      <!-- Sidebar with drag elements -->
+      <div class="flex">
+        <div class="w-1/4 bg-white p-4 shadow-lg rounded-lg">
+          <h2 class="font-semibold text-lg mb-4">Drag Components</h2>
+          <div class="mb-4 draggable" draggable="true" data-type="text">
+            <p class="p-2 bg-blue-100 text-center">Text</p>
+          </div>
+          <div class="mb-4 draggable" draggable="true" data-type="image">
+            <p class="p-2 bg-blue-100 text-center">Image</p>
+          </div>
+          <div class="mb-4 draggable" draggable="true" data-type="button">
+            <p class="p-2 bg-blue-100 text-center">Button</p>
+          </div>
+          <div class="mb-4 draggable" draggable="true" data-type="form">
+            <p class="p-2 bg-blue-100 text-center">Form</p>
+          </div>
+          <button
+            id="export-button"
+            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4 w-full"
+          >
+            Export HTML
+          </button>
+        </div>
+
+        <!-- Canvas for building the landing page -->
+        <div class="w-3/4 p-4 ml-6">
+          <h2 class="font-semibold text-lg mb-4">Landing Page Canvas</h2>
+          <div
+            id="canvas"
+            class="canvas bg-white rounded-lg p-6 shadow-md"
+            ondragover="allowDrop(event)"
+            ondrop="drop(event)"
+          >
+            <p class="text-gray-500 text-center">Drag and drop elements here</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div
+      id="exportModal"
+      class="fixed inset-0 hidden bg-gray-600 bg-opacity-50 flex items-center justify-center"
+    >
+      <div class="bg-white p-6 rounded-lg shadow-lg w-1/2">
+        <h3 class="text-xl font-bold mb-4">Exported HTML</h3>
+        <textarea
+          id="exported-html"
+          class="w-full h-64 p-4 border-2 rounded-md"
+          readonly
+        ></textarea>
+        <button
+          id="close-export"
+          class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // Allow drop on the canvas
+      function allowDrop(event) {
+        event.preventDefault();
+      }
+
+      // Handle element drop
+      function drop(event) {
+        event.preventDefault();
+        var dataType = event.dataTransfer.getData("type");
+
+        var element;
+        switch (dataType) {
+          case "text":
+            element = document.createElement("p");
+            element.textContent = "This is a text element";
+            element.classList.add("p-2", "bg-gray-100", "mt-2");
+            break;
+          case "image":
+            element = document.createElement("img");
+            element.src = "https://via.placeholder.com/150";
+            element.alt = "Placeholder Image";
+            element.classList.add("mt-2");
+            break;
+          case "button":
+            element = document.createElement("button");
+            element.textContent = "Click Me!";
+            element.classList.add(
+              "bg-blue-500",
+              "text-white",
+              "p-2",
+              "rounded",
+              "mt-2"
+            );
+            break;
+          case "form":
+            element = document.createElement("form");
+            var input = document.createElement("input");
+            input.type = "email";
+            input.placeholder = "Enter your email";
+            input.classList.add("border", "p-2", "w-full", "mt-2");
+            var submit = document.createElement("button");
+            submit.type = "submit";
+            submit.textContent = "Submit";
+            submit.classList.add(
+              "bg-blue-500",
+              "text-white",
+              "p-2",
+              "rounded",
+              "mt-2"
+            );
+            element.appendChild(input);
+            element.appendChild(submit);
+            break;
+        }
+        if (element) {
+          document.getElementById("canvas").appendChild(element);
+        }
+      }
+
+      // Handle dragging
+      document.querySelectorAll(".draggable").forEach((item) => {
+        item.addEventListener("dragstart", (event) => {
+          event.dataTransfer.setData(
+            "type",
+            event.target.getAttribute("data-type")
+          );
+        });
+      });
+
+      // Handle export
+      document
+        .getElementById("export-button")
+        .addEventListener("click", function () {
+          const canvas = document.getElementById("canvas");
+          const exportedHTML = canvas.innerHTML;
+
+          document.getElementById("exported-html").value = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Landing Page</title>
+  <link href="https://cdn.tailwindcss.com" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+  <div class="container mx-auto p-8">
+    ${exportedHTML}
+  </div>
+</body>
+</html>`;
+
+          document.getElementById("exportModal").classList.remove("hidden");
+        });
+
+      // Close export modal
+      document
+        .getElementById("close-export")
+        .addEventListener("click", function () {
+          document.getElementById("exportModal").classList.add("hidden");
+        });
+    </script>
+  </body>
+</html>
