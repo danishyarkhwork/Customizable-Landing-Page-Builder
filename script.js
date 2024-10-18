@@ -1,8 +1,7 @@
-pt >
-  // Allow drop on the canvas
-  function allowDrop(event) {
-    event.preventDefault();
-  };
+// Allow drop on the canvas
+function allowDrop(event) {
+  event.preventDefault();
+}
 
 // Handle element drop
 function drop(event) {
